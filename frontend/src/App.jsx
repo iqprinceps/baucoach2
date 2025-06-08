@@ -8,6 +8,7 @@ function App() {
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(false)
   const endRef = useRef(null)
+  const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 
   useEffect(() => {
     if (!file) {
@@ -48,7 +49,7 @@ function App() {
         const formData = new FormData()
         formData.append('file', file)
         formData.append('category', category)
-        res = await fetch('http://localhost:8000/upload', {
+        res = await fetch(`${apiBase}/upload`, {
           method: 'POST',
           body: formData,
         })
@@ -56,7 +57,7 @@ function App() {
         const params = new URLSearchParams()
         params.append('message', message)
         params.append('category', category)
-        res = await fetch('http://localhost:8000/prompt', {
+        res = await fetch(`${apiBase}/prompt`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: params.toString(),
