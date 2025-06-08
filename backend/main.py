@@ -32,12 +32,15 @@ app = FastAPI()
 @app.post("/upload")
 async def upload_pdf(
     file: UploadFile = File(...),
-    category: str = Form("mangelanzeige"),
+    category: str = Form(...),
 ):
     text = await extract_text_from_pdf(file)
 
     if not text.strip():
         raise HTTPException(status_code=422, detail="Leerer PDF-Text")
+
+    if not category:
+        category = "mangelanzeige"
 
     valid_categories = {
         "mangelanzeige",
@@ -47,7 +50,7 @@ async def upload_pdf(
         "email_korrektur",
     }
 
-    if category and category not in valid_categories:
+    if category not in valid_categories:
         raise HTTPException(status_code=400, detail="Ungültige Kategorie")
 
     prompt = build_prompt(category, text)
