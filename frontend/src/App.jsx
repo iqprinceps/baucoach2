@@ -5,7 +5,7 @@ function App() {
   const [category, setCategory] = useState('mangelanzeige')
   const [file, setFile] = useState(null)
   const [preview, setPreview] = useState(null)
-  const [messages, setMessages] = useState([])
+  const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(false)
   const endRef = useRef(null)
 
@@ -21,96 +21,104 @@ function App() {
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
+  }, [history, loading])
+
+  const handleDragOver = (e) => {
+    e.preventDefault()
+  }
+
+  const handleDrop = (e) => {
+    e.preventDefault()
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setFile(e.dataTransfer.files[0])
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!message && !file) return
 
-    // Anzeige der Nutzereingabe
     const userText = message || (file ? file.name : '')
-    setMessages((prev) => [...prev, { sender: 'user', text: userText }])
-
-    const formData = new FormData()
-    let url = 'http://localhost:8000/prompt'
-
-    if (file) {
-      formData.append('file', file)
-      formData.append('category', category)
-      url = 'http://localhost:8000/upload'
-    } else {
-      formData.append('message', message)
-      formData.append('category', category)
-    }
+    setHistory((prev) => [...prev, { sender: 'user', text: userText }])
 
     setLoading(true)
-    setMessage('')
-    setFile(null)
-
     try {
-      const res = await fetch(url, {
-        method: 'POST',
-        body: formData,
-      })
+      let res
+      if (file) {
+        const formData = new FormData()
+        formData.append('file', file)
+        formData.append('category', category)
+        res = await fetch('http://localhost:8000/upload', {
+          method: 'POST',
+          body: formData,
+        })
+      } else {
+        const params = new URLSearchParams()
+        params.append('message', message)
+        params.append('category', category)
+        res = await fetch('http://localhost:8000/prompt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params.toString(),
+        })
+      }
+
       const data = await res.json()
-      setMessages((prev) => [
+      setHistory((prev) => [
         ...prev,
-        {
-          sender: 'gpt',
-          text: data.generated,
-          rawText: data.text,
-        },
+        { sender: 'gpt', text: data.generated, rawText: data.text },
       ])
     } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        { sender: 'gpt', text: 'Fehler: ' + err.message },
-      ])
+      setHistory((prev) => [...prev, { sender: 'gpt', text: 'Fehler: ' + err.message }])
     } finally {
       setLoading(false)
+      setMessage('')
+      setFile(null)
     }
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
+    <div
+      className="flex flex-col h-screen bg-gray-100"
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((msg, idx) => (
+        {history.map((msg, idx) => (
           <div
             key={idx}
             className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-xs p-3 rounded-lg shadow whitespace-pre-wrap ${
+              className={`max-w-[75%] p-3 rounded-lg shadow whitespace-pre-wrap ${
                 msg.sender === 'user'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-200'
+                  ? 'bg-blue-100 text-blue-900'
+                  : 'bg-gray-100 text-gray-900'
               }`}
             >
               {msg.text}
               {msg.rawText && (
-                <pre className="mt-2 p-2 text-xs bg-gray-100 rounded">
-                  {msg.rawText}
-                </pre>
+                <pre className="mt-2 p-2 text-xs bg-gray-50 rounded">{msg.rawText}</pre>
               )}
             </div>
           </div>
         ))}
+        {loading && (
+          <div className="flex justify-start">
+            <div className="flex items-center space-x-2 bg-gray-100 text-gray-900 p-3 rounded-lg">
+              <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+              <span>Antwort wird generiert...</span>
+            </div>
+          </div>
+        )}
         <div ref={endRef} />
       </div>
 
-      {preview && (
-        <div className="p-4 border-t">
-          {file?.type.startsWith('image/') ? (
-            <img src={preview} alt="preview" className="max-h-40 mx-auto" />
-          ) : file?.type === 'application/pdf' ? (
-            <embed src={preview} className="w-full h-40" type="application/pdf" />
-          ) : (
-            <p className="text-center">{file.name}</p>
-          )}
-        </div>
+      {file && (
+        <div className="p-2 border-t bg-white text-sm text-gray-700">Datei ausgewählt: {file.name}</div>
       )}
 
-      <form onSubmit={handleSubmit} className="p-4 flex space-x-2 border-t">
+      <form onSubmit={handleSubmit} className="p-4 flex gap-2 items-end border-t bg-white">
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
