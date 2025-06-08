@@ -102,8 +102,10 @@ function App() {
         <div className="p-4 border-t">
           {file?.type.startsWith('image/') ? (
             <img src={preview} alt="preview" className="max-h-40 mx-auto" />
-          ) : (
+          ) : file?.type === 'application/pdf' ? (
             <embed src={preview} className="w-full h-40" type="application/pdf" />
+          ) : (
+            <p className="text-center">{file.name}</p>
           )}
         </div>
       )}
@@ -132,6 +134,7 @@ function App() {
           <span className="text-xl">+</span>
           <input
             type="file"
+            accept=".pdf,.docx,.png,.jpg,.jpeg"
             onChange={(e) => setFile(e.target.files[0])}
             className="hidden"
           />
