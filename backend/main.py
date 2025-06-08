@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from .services.parser import extract_text_from_pdf
 from .services.openai_client import call_openai
@@ -28,6 +29,14 @@ def build_prompt(category: str, content: str) -> str:
 
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Optional später: ["http://localhost:5173", "http://45.89.125.188:5173"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.post("/upload")
