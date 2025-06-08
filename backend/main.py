@@ -26,6 +26,7 @@ def build_prompt(category: str, content: str) -> str:
     }
     return prompts.get(category, f"Verarbeite diesen Text:\n\n{content}")
 
+
 app = FastAPI()
 
 
@@ -56,7 +57,40 @@ async def upload_pdf(
     prompt = build_prompt(category, text)
     generated_text = call_openai(prompt)
 
-    return JSONResponse({
-        "text": text,
-        "generated": generated_text,
-    })
+    return JSONResponse(
+        {
+            "text": text,
+            "generated": generated_text,
+        }
+    )
+
+
+@app.post("/prompt")
+async def prompt(message: str = Form(...), category: str = Form("")):
+    if not message.strip():
+        raise HTTPException(status_code=422, detail="Leere Eingabe")
+
+    if not category:
+        category = "frei"
+
+    valid_categories = {
+        "mangelanzeige",
+        "nachtrag",
+        "bautagebuch",
+        "vob_pruefen",
+        "email_korrektur",
+        "frei",
+    }
+
+    if category not in valid_categories:
+        raise HTTPException(status_code=400, detail="Ungültige Kategorie")
+
+    prompt = build_prompt(category, message)
+    gpt_answer = call_openai(prompt)
+
+    return JSONResponse(
+        {
+            "input": message,
+            "generated": gpt_answer,
+        }
+    )
