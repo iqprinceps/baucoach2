@@ -6,7 +6,7 @@ Helper scripts are provided for setting up PostgreSQL (optional) and preparing t
 Python environment. Make sure the scripts are executable:
 
 ```bash
-chmod +x setup_postgres.sh setup.sh
+chmod +x setup_postgres.sh setup.sh run_backend.sh
 ```
 
 ### 1. (Optional) Install and configure PostgreSQL
@@ -41,8 +41,11 @@ exist). Before running the application, open `.env` and fill in your
 
 ## Running the Backend
 
-Start the FastAPI server using Uvicorn:
+Use the helper script to start the FastAPI server:
 
 ```bash
-uvicorn backend.main:app --reload
+./run_backend.sh
 ```
+
+The script activates `.venv` and launches `uvicorn backend.main:app`.
+
