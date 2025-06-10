@@ -11,7 +11,10 @@ chmod +x setup_postgres.sh setup.sh run_backend.sh
 
 ### 1. (Optional) Install and configure PostgreSQL
 
-Run the following if PostgreSQL is not yet installed on your system:
+Run the following if PostgreSQL is not yet installed on your system. The script
+requires `sudo` privileges because it installs packages and modifies the system
+configuration. When running in a containerized environment, you might need to
+adjust the commands to fit your image or install PostgreSQL separately:
 
 ```bash
 ./setup_postgres.sh
