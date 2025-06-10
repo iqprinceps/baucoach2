@@ -29,7 +29,7 @@ dependencies and apply database migrations:
 ./setup.sh
 ```
 
-After it finishes, activate the virtual environment:
+After it finishes, the script prints a reminder to activate the virtual environment. Activate it manually with:
 
 ```bash
 source .venv/bin/activate
