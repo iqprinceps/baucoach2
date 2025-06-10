@@ -11,3 +11,4 @@ if [ ! -f .env ]; then
 fi
 
 alembic upgrade head
+echo "Setup complete. Run \"source .venv/bin/activate\" to activate the virtual environment."
