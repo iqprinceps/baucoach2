@@ -4,8 +4,9 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-# Load environment variables from .env file if present
-load_dotenv(Path(__file__).resolve().parent / '.env')
+# Load environment variables from the project's root .env file if present
+env_path = Path(__file__).resolve().parents[2] / '.env'
+load_dotenv(env_path)
 
 POSTGRES_HOST = os.getenv('POSTGRES_HOST', 'localhost')
 POSTGRES_PORT = os.getenv('POSTGRES_PORT', '5432')
