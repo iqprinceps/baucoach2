@@ -2,11 +2,17 @@ from logging.config import fileConfig
 from pathlib import Path
 import sys
 
+from dotenv import load_dotenv
+
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
+
+# Load environment variables from the project root so Alembic has access to
+# settings defined in the `.env` file when running migrations.
+load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 from backend.database.db import Base, DATABASE_URL  # noqa: E402
 from backend.database import models  # noqa: F401
 
