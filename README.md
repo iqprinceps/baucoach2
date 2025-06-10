@@ -12,7 +12,7 @@ cp .env.example .env
 2. Install the required packages:
 
 ```
-pip install fastapi uvicorn pdfplumber python-dotenv openai>=1.0.0
+pip install -r requirements.txt
 ```
 
 ## Running the Backend
