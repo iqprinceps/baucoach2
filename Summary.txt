@@ -1,0 +1,23 @@
+Baucoach is a full-stack application with a FastAPI backend and a React frontend generated via Vite and styled with Tailwind CSS. The project also uses Alembic for database migrations and includes several helper scripts for development setup.
+
+backend/
+- `main.py` – defines the FastAPI application and endpoints for PDF upload and prompting.
+- `database/` – SQLAlchemy setup along with database models.
+- `services/` – utility modules such as the OpenAI client and PDF parser.
+
+frontend/
+- React application bootstrapped with Vite.
+- `src/` contains `App.jsx` and other entry files.
+- Styled using Tailwind CSS as configured by `tailwind.config.cjs` and PostCSS.
+
+alembic/
+- Migration environment used by Alembic.
+- `versions/` houses migration scripts, e.g. `8883df0de707_initial.py`.
+
+prompts/
+- Placeholder directory (currently only a `.gitkeep` file) for storing prompt templates.
+
+Other notable files
+- `requirements.txt` lists backend Python dependencies.
+- `package.json` lists frontend dependencies and scripts.
+- `setup.sh`, `setup_postgres.sh` and `run_backend.sh` are helper scripts for environment setup and running the backend.
