@@ -36,7 +36,8 @@ source .venv/bin/activate
 ```
 
 Customize `.env` as needed (the script copies `.env.example` if `.env` does not
-exist).
+exist). Before running the application, open `.env` and fill in your
+`OPENAI_API_KEY` value.
 
 ## Running the Backend
 
